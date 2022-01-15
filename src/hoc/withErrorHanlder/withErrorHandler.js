@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+
 import React, { Component } from "react";
 import Modal from "../../components/UI/Modal/Modal";
 import Aux from "../Auxiliary/Auxiliary";
