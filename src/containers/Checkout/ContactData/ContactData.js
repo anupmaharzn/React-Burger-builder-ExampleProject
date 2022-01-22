@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Button from '../../../components/UI/Button/Button';
 import axios from '../../../axios-order';
 import styles from './ContactData.module.css';
@@ -151,7 +152,7 @@ class ContactData extends Component {
             loading: true
         })
         const order = {
-            ingredients: this.props.ingredients,
+            ingredients: this.props.ings,
             //inreal app price is calculated in backend coz user can manipulated the data noted:
             price: this.props.price,
             orderData: formData
@@ -214,5 +215,11 @@ class ContactData extends Component {
     }
 }
 
+const mapStateToprops = state => {
+    return {
+        ings: state.ingredients,
+        price: state.totalPrice
+    }
+}
 
-export default ContactData;
+export default connect(mapStateToprops)(ContactData);
