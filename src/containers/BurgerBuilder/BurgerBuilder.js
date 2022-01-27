@@ -6,9 +6,11 @@ import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
-import withErrorHandler from '../../hoc/withErrorHanlder/withErrorHandler';
 import axios from '../../axios-order';
-import * as actionTypes from '../../store/actions';
+import withErrorHandler from '../../hoc/withErrorHanlder/withErrorHandler';
+
+import * as burgerbuilderActions from '../../store/actions/index';
+
 
 
 
@@ -21,25 +23,17 @@ class BurgerBuilder extends Component {
         //ingredients from backend
         purchasing: false,
         loading: false,
-        error: false
+
     }
     componentDidMount() {
         // we will learn paxi when handling async in reducer
+        // console.log(this.props);
+        this.props.onInitIngredients();
 
-        // axios.get('/ingredients.json')
-        //     .then(response => {
-        //         this.setState({
-        //             ingredients: response.data,
-        //         })
-        //     }).catch(error => {
-        //         this.setState({
-        //             error: true,
-        //         })
-        //     });
 
     }
 
-    updatepurchaseState(ingredients) {
+    updatepurchaseState = (ingredients) => {
         const sum = Object.keys(ingredients)
             .map(igKey => {
                 return ingredients[igKey];
@@ -111,29 +105,16 @@ class BurgerBuilder extends Component {
     };
     purchaseContinueHandler = () => {
 
-        //we do this in redux
+        this.props.onInitPurchase();
 
-
-        // const queryParams = [];
-
-        // for (let i in this.state.ingredients) {
-        //     queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
-        // }
-
-        // queryParams.push('price=' + this.state.totalPrice);
-        // const queryString = queryParams.join('&');
-
-        this.props.history.push({
-            pathname: '/checkout',
-            // search: '?' + queryString
-        });
+        this.props.history.push('/checkout');
     };
     render() {
 
         const disabledInfo = { ...this.props.ings };
 
         let orderSummary = null;
-        let burger = this.state.error ? <p>ingredient cant be loaded</p> : <Spinner />;
+        let burger = this.props.error ? <p>ingredient cant be loaded</p> : <Spinner />;
         if (this.props.ings) {
             burger = (
                 <Aux>
@@ -171,14 +152,17 @@ class BurgerBuilder extends Component {
 }
 const mapStateToprops = state => {
     return {
-        ings: state.ingredients,
-        price: state.totalPrice
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        error: state.burgerBuilder.error
     };
 }
 const mapDispatchToprops = dispatch => {
     return {
-        onIngredientAdded: (ingName) => dispatch({ type: actionTypes.ADD_INGREDIENT, ingredientName: ingName }),
-        onIngredientRemoved: (ingName) => dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName })
+        onIngredientAdded: (ingName) => dispatch(burgerbuilderActions.addIngredient(ingName)),
+        onIngredientRemoved: (ingName) => dispatch(burgerbuilderActions.removeIngredient(ingName)),
+        onInitIngredients: () => dispatch(burgerbuilderActions.initIngredients()),
+        onInitPurchase: () => dispatch(burgerbuilderActions.purchaseInit())
     }
 }
 //witherrohandler is HOC WRAPPER

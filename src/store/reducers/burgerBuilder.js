@@ -1,13 +1,9 @@
-import * as actionTypes from './actions';
+import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
-    ingredients: {
-        salad: 0,
-        bacon: 0,
-        cheese: 0,
-        meat: 0
-    },
+    ingredients: null,
     totalPrice: 2,
+    error: false,
 };
 const INGREDINET_PRICE = {
     salad: 0.5,
@@ -36,14 +32,38 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 ingredients: {
                     ...state.ingredients,
+                    //name as payload : then old yesma vako ko value  + 1 state.ingrendients[salad] vanyeko 0 ho ni
+                    // ani yesle override garxa the copy we created
                     [action.ingredientName]: state.ingredients[action.ingredientName] - 1,
-
                 },
-                totalPrice: state.totalPrice - INGREDINET_PRICE[action.ingredientName]
+                totalPrice: state.totalPrice + INGREDINET_PRICE[action.ingredientName]
             };
+        case actionTypes.SET_INGREDIENTS: {
+            return {
+                ...state,
+                ingredients: {
+                    salad: action.ingredients.salad,
+                    bacon: action.ingredients.bacon,
+                    cheese: action.ingredients.cheese,
+                    meat: action.ingredients.meat
+                },
+                error: false,
+                totalPrice: 2,
+
+            }
+        };
+        case actionTypes.FETCH_INGREDIENT_FAILED:
+            {
+                return {
+                    ...state,
+                    error: true
+                }
+            }
+        default:
+            return state;
     };
 
-    return state;
+
 
 };
 
